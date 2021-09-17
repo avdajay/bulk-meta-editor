@@ -4,11 +4,11 @@ This is a WordPress plugin that bulk updates the seo data used by the Yoast SEO 
 
 ## Requirements
 
-* Latest version of Yoast SEO
-* Website that runs at least PHP version 5.6 and WordPress version 5.2
-* Bulk data in a csv file with a proper format
+- Latest version of Yoast SEO
+- Website that runs at least PHP version 5.6 and WordPress version 5.2
+- Bulk data in a csv file with a proper format
 
-[Please follow the full guide here](https://ariesdajay.com/guide-bulk-meta-editor-for-yoast/)
+[Please follow the full guide here](https://ariesdajay.com/guide-bulk-meta-editor/)
 
 ## Donate
 

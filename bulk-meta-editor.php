@@ -2,16 +2,16 @@
 
 /**
  * Plugin Name:       Bulk Meta Editor
- * Plugin URI:        https://ariesdajay.com/bulk-meta-editor-for-yoast/
- * Description:       Bulk updates the metadata such as the title, description, canonical url, and the indexing of a page. Created for most Web Developers and SEO Specialists who do website audits.
+ * Plugin URI:        https://ariesdajay.com/bulk-meta-editor/
+ * Description:       Bulk updates the metadata such as the title, description, canonical url, and the indexing of a page. Created for most Web Developers and SEO Specialists who do website audits. Currently supports Yoast as of the moment.
  * Version:           1.0.0
- * Requires at least: 5.2
+ * Requires at least: 5.6
  * Requires PHP:      5.6
  * Author:            Aries Dajay
  * Author URI:        https://ariesdajay.com/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       bulk-meta-editor-for-yoast
+ * Text Domain:       bulk-meta-editor
  * Domain Path:       /languages
  */
 
