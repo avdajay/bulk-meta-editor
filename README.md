@@ -1,6 +1,6 @@
-# Bulk Meta Editor for Yoast
+# Bulk Meta Editor
 
-This is a WordPress plugin that bulk updates the seo data used by the Yoast SEO plugin cause their current bulk editing feature is ironically cumbersome.
+This is a WordPress plugin that bulk updates the seo data used by the SEO plugins. Currently supports Yoast cause their bulk editing feature is ironically cumbersome.
 
 ## Requirements
 
