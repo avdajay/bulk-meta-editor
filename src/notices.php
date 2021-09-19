@@ -9,8 +9,8 @@ class Notices
     public static function get()
     {
         $option = get_option(self::OPTION_NAME);
-        echo '<div class="notice '. $option['error_type'] .' '. $option['dismissible'] .'">';
-        echo '<p>'. $option['message'] .'</p>';
+        echo '<div class="notice '. esc_html($option['error_type']) .' '. esc_html($option['dismissible']) .'">';
+        echo '<p>'. esc_html($option['message']) .'</p>';
         echo '</div>';
     }
 

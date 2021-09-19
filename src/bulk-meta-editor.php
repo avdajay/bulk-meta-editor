@@ -72,18 +72,55 @@ class BulkMetaEditor
         return $post_id;
     }
 
-    public function sanitizeUrl($url)
+    public function sanitize($raw, $type)
     {
-        $sanitized_url = esc_url_raw($url);
+        switch($type) {
 
-        return $sanitized_url;
+            case 'url':
+                $sanitized = esc_url_raw($raw);
+                break;
+            
+            case 'text':
+                $sanitized = sanitize_text_field($raw);
+                break;
+
+            case 'number':
+                $sanitized = intval($raw);
+        }
+
+        return $sanitized;
     }
 
-    public function sanitizeText($text)
+    public function validate($raw, $type)
     {
-        $sanitized_text = sanitize_text_field($text);
+        switch($type) {
+            case 'csv':
+                $acceptable_mimes = [
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/x-vnd.oasis.opendocument.spreadsheet',
+                    'application/vnd.ms-excel',
+                    'text/csv',
+                ];
 
-        return $sanitized_text;
+                if(in_array($raw, $acceptable_mimes)) {
+                    return true;
+                }
+                return false;
+                break;
+
+            case 'number':
+                if(is_numeric($raw)) {
+                    return true;
+                }
+                break;
+
+            case 'url':
+                if(esc_url_raw($raw) === $raw) {
+                    return true;
+                }
+                return false;
+                break;
+        }
     }
 
     public function activate()
@@ -110,50 +147,52 @@ class BulkMetaEditor
     {
         if(current_user_can('manage_options')) {
 
-            if( !empty($_FILES['file_upload']['tmp_name']) ) {
+            // Lets open the file, data are validated invidually after converted to array by the fgetcsv function
+            $handle  = fopen($_FILES['file_upload']['tmp_name'], "r");
             
-                $handle  = fopen($_FILES['file_upload']['tmp_name'], "r");
-                $headers = fgetcsv($handle);
-                
-                while (($data = fgetcsv($handle)) !== FALSE) {
-
-                    $post_id = $this->getPostId($this->sanitizeUrl($data[0]));
-                    
-                    // Checks if there is a value in the Meta Title colum of the CSV, then updates the key with the new data.
-                    if(!empty($data[1])) {
-                        update_post_meta($post_id, '_yoast_wpseo_title', $this->sanitizeText($data[1]));
-                    }
-
-                    // Checks if there is a value in the Meta Description column of the CSV, then updates the key with the new data.
-                    if(!empty($data[2])) {
-                        update_post_meta($post_id, '_yoast_wpseo_metadesc', $this->sanitizeText($data[2]));
-                    }
-
-                    // Checks if there is a value in the Canonical URL column of the CSV, then updates the key with the new data.
-                    if(!empty($data[3])) {
-                        update_post_meta($post_id, '_yoast_wpseo_canonical', $this->sanitizeText($data[3]));
-                    }
-
-                    // Checks if there is a value in the Noindex column of the CSV, then updates the key with the new data.
-                    if(!empty($data[4])) {
-                        update_post_meta($post_id, '_yoast_wpseo_meta-robots-noindex', $this->sanitizeText($data[4]));
-                    }
-
-                    if(!empty($data[5])) {
-                        update_post_meta($post_id, '_yoast_wpseo_meta-robots-nofollow', $this->sanitizeText($data[5]));
-                    }
-
-                }
-    
-                fclose($handle);
-    
-                Notices::set('Metadata Updated', 'notice-success');
+            // Checks if the file exists, redirect if not
+            if(empty($handle) || !$this->validate($_FILES['file_upload']['type'], 'csv')) {
+                Notices::set('No file attached or the uploaded file is not in CSV format', 'notice-error');
                 $this->redirect();
+            }
+
+            $headers = fgetcsv($handle);
+            
+            while (($data = fgetcsv($handle)) !== FALSE) {
+
+                // validate if URL is valid for conversion to post ID
+                if($this->validate($data[0], 'url')) {
+                    $post_id = $this->getPostId($this->sanitize($data[0], 'url'));
+                }
+                
+                // Checks if there is a value in the Meta Title colum of the CSV, then updates the key with the new data.
+                if(!empty($data[1])) {
+                    update_post_meta($post_id, '_yoast_wpseo_title', $this->sanitize($data[1], 'text'));
+                }
+
+                // Checks if there is a value in the Meta Description column of the CSV, then updates the key with the new data.
+                if(!empty($data[2])) {
+                    update_post_meta($post_id, '_yoast_wpseo_metadesc', $this->sanitize($data[2], 'text'));
+                }
+
+                // Checks if there is a value in the Canonical URL column of the CSV and is a valid URL, then updates the key with the new data.
+                if(!empty($data[3]) && $this->validate($data[3], 'url')) {
+                    update_post_meta($post_id, '_yoast_wpseo_canonical', $this->sanitize($data[3], 'text'));
+                }
+
+                // Checks if there is a value in the Noindex column of the CSV and is valid number, then updates the key with the new data.
+                if(!empty($data[4]) && $this->validate($data[4], 'number')) {
+                    update_post_meta($post_id, '_yoast_wpseo_meta-robots-noindex', $this->sanitize($data[4], 'number'));
+                }
+
+                // Checks if there is a value in the Nofollow column of the CSV and is valid number, then updates the key with the new data.
+                if(!empty($data[5]) && $this->validate($data[4], 'number')) {
+                    update_post_meta($post_id, '_yoast_wpseo_meta-robots-nofollow', $this->sanitizeText($data[5], 'number'));
+                }
 
             }
-    
-            Notices::set('No File Attached', 'notice-error');
-            $this->redirect();
+
+            fclose($handle);
 
         } else {
 
