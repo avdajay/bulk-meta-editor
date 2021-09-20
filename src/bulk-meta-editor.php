@@ -194,6 +194,9 @@ class BulkMetaEditor
 
             fclose($handle);
 
+            Notices::set('Metadata updated.', 'notice-success', false);
+            $this->redirect();
+
         } else {
 
             Notices::set('Action not permitted', 'notice-error', false);
