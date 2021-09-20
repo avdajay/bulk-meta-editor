@@ -177,7 +177,7 @@ class BulkMetaEditor
 
                 // Checks if there is a value in the Canonical URL column of the CSV and is a valid URL, then updates the key with the new data.
                 if(!empty($data[3]) && $this->validate($data[3], 'url')) {
-                    update_post_meta($post_id, '_yoast_wpseo_canonical', $this->sanitize($data[3], 'text'));
+                    update_post_meta($post_id, '_yoast_wpseo_canonical', $this->sanitize($data[3], 'url'));
                 }
 
                 // Checks if there is a value in the Noindex column of the CSV and is valid number, then updates the key with the new data.
