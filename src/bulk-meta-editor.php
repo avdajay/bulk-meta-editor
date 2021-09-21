@@ -86,6 +86,7 @@ class BulkMetaEditor
 
             case 'number':
                 $sanitized = intval($raw);
+                break;
         }
 
         return $sanitized;
@@ -145,10 +146,12 @@ class BulkMetaEditor
 
     public function processBulkData()
     {
-        if(current_user_can('manage_options')) {
+        if(current_user_can('manage_options') && current_user_can('upload_files')) {
 
+            $file = $this->sanitize(realpath($_FILES['file_upload']['tmp_name']), 'text');
+            
             // Lets open the file, data are validated invidually after converted to array by the fgetcsv function
-            $handle  = fopen($_FILES['file_upload']['tmp_name'], "r");
+            $handle  = fopen($file, "r");
             
             // Checks if the file exists, redirect if not
             if(empty($handle) || !$this->validate($_FILES['file_upload']['type'], 'csv')) {
