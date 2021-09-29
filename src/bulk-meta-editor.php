@@ -13,7 +13,7 @@ class BulkMetaEditor
         add_action('admin_menu', [$this, 'createAdminMenu']);
         add_action('admin_post_arva_submit', [$this, 'processBulkData']);
         
-        if(isset($_GET['message'])) {
+        if(isset($_GET['message']) && $_GET['message'] == 'bme-message') {
             add_action('admin_notices', function() {
                 Notices::get();
             });
@@ -140,7 +140,7 @@ class BulkMetaEditor
 
     public function redirect()
     {
-        wp_redirect(admin_url('admin.php?page=bulk-meta-editor&message=1'));
+        wp_redirect(admin_url('admin.php?page=bulk-meta-editor&message=bme-message'));
         exit;
     }
 
